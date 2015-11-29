@@ -1,7 +1,7 @@
 ---
 classes:
  - 'profile::base'
- - Ã'apache'
+ - 'apache'
 
 ntp::servers:
   - 0.us.pool.ntp.org
