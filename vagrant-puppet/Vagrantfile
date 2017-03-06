@@ -4,6 +4,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "centos/6"
   config.vm.hostname = "puppet"
+  config.vm.synced_folder "code/", "/opt/puppet_code"
   config.vm.network :private_network, ip: "192.168.58.111"
   config.vm.provision "shell", path: "script.sh"
 
