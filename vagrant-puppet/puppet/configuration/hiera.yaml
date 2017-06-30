@@ -1,0 +1,8 @@
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: "/vagrant/environments/%{environment}/hieradata"
+:hierarchy:
+  - "nodes/%{::trusted.certname}"
+  - "%{environment}"

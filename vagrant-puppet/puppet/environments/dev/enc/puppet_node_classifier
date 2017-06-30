@@ -1,0 +1,26 @@
+#!/bin/bash
+
+## Get the hostname and classify
+
+HOST=$1
+
+NODE_YAML_FOLDER=`dirname $(readlink -f $0)`
+
+node_defs="$NODE_YAML_FOLDER/nodes.yaml"
+
+
+classification=`cat $node_defs | grep -w $HOST`
+
+if ! [[ $classification == "" ]];then
+
+## A node has been found
+
+role=`echo $classification | awk '{print $2}' | awk -F: '{print $2}' | sed 's/,//g'`
+environment=`echo $classification | awk '{print $3}' | awk -F: '{print $2}' | sed 's/,//g'`
+
+echo "---"
+echo "classes:"
+echo " - role::$role"
+echo "environment : $environment"
+
+fi
