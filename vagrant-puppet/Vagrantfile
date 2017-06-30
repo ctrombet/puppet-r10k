@@ -2,12 +2,23 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "centos/6"
+  config.vm.box = "centos/7"
   config.vm.hostname = "puppet"
-  config.vm.synced_folder "./code", "/vagrant", owner: "vagrant", group: "vagrant", type: "nfs"
+  config.vm.synced_folder "./shared", "/vagrant", owner: "vagrant", group: "vagrant", type: "nfs"
   config.vm.network :private_network, ip: "192.168.58.111"
   config.vm.network "forwarded_port", guest: 80, host: 80
-  config.vm.provision "shell", path: "script.sh"
+  config.vm.provider "virtualbox" do |v|
+     v.memory = 4096
+  end
 
+  config.vm.provision "shell", path: "script.sh"
+  config.vm.provision "file", source: "puppet/configuration/hiera.yaml", destination: "/tmp/hiera.yaml"
+  config.vm.provision "file", source: "puppet/configuration/puppet.conf", destination: "/tmp/puppet.conf"
+  config.vm.provision "file", source: "puppet/configuration/puppetserver", destination: "/tmp/puppetserver"
+  config.vm.provision "file", source: "puppet/environments/dev/enc/nodes.yaml", destination: "/vagrant/environments/dev/enc/nodes.yaml"
+  config.vm.provision "file", source: "puppet/environments/dev/enc/puppet_node_classifier", destination: "/vagrant/environments/dev/enc/puppet_node_classifier"
+  config.vm.provision "file", source: "puppet/environments/dev/hieradata/dev.yaml", destination: "/vagrant/environments/dev/hieradata/dev.yaml"
+  config.vm.provision "file", source: "puppet/environments/dev/modules/test/manifests/init.pp", destination: "/vagrant/environments/dev/modules/test/manifests/init.pp"
+  config.vm.provision "shell", path: "script2.sh"
 end
 

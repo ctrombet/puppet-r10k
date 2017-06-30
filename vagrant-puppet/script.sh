@@ -2,18 +2,46 @@
 
 echo "Vagrant provisioning"
 
-rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-6.noarch.rpm
+echo "Creating all the folders required"
 
-rpm -Uvh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+mkdir -p /vagrant/environments/dev/enc  /vagrant/environments/dev/hieradata /vagrant/environments/dev/modules/test/manifests
+mkdir -p /vagrant/environments/dev/modules/profile/manifests /vagrant/environments/dev/modules/role/manifests
+mkdir -p /vagrant/artifacts
 
-yum update -y --skip-broken && yum install -y --skip-broken puppet-agent
+## Update all and install EPEL repo for extra packages
 
-/opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+yum -y update
+#yum install -y epel-release
 
-yum install -y curl wget lynx git python2.7 python-pip
+rpm -ivh https://yum.puppetlabs.com/el/7/products/x86_64/puppetlabs-release-7-12.noarch.rpm
 
-pip install awscli
+## Install Puppet Agent and Server
 
+yum -y update 
+yum install -y puppet puppetserver
+
+
+# Install some extra utilities
+yum install -y curl vim nano wget lynx git python2.7 python-pip curl
+
+
+# Install NGIX to store artifacts to download
+
+yum install -y nginx
+
+# Create a artifacts folder where they can be downloaded
+
+cd /usr/share/nginx/html && ln -s /vagrant/artifacts artifacts
+
+## Important: disable SELinux to allow Nginx to load folder outside it's default'
+
+sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+
+# Start Nginx
+sudo service nginx start
+
+# Enable it at restart
+chkconfig nginx on
 
 echo "Environment provisioned"
 
